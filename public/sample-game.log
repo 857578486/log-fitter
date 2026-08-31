@@ -1,0 +1,120 @@
+=== 开始记录日志 2026-08-29 21:53:13.553 ===
+2026-08-29 21:53:14|21:53:14.371-145: 302 onNetMessage    11021
+2026-08-29 21:53:14|26/08/29 21:53:14, 如意牌机制|服务器日志|11021|更新三选1如意效果| {
+  outPoker= 160        =>0xA0,
+  chooseTime= 15        =>0x0F,
+  seatID= 3        =>0x03,
+  effectInfo= table: 0x76371f1fb750    {
+      [1] = table: 0x76371f1fb6f0        {
+          [1] = "hepai.RuYiEffectInfo",
+          [2] = "
+还有谁！9可随机选择1-3名玩家，互相明牌，结算翻倍 ",
+        },
+      [2] = table: 0x76371f1fb7f0        {
+          [1] = "hepai.RuYiEffectInfo",
+          [2] = "点灯$随机点亮一个外圈如意宝灯 ",
+        },
+      [3] = table: 0x76371f1fb8d0        {
+          [1] = "hepai.RuYiEffectInfo",
+          [2] = "
+相信运气E打出或二合【如意牌】时，40%机率返还对应张数的牌 ",
+        },
+    },
+}, 
+stack traceback:
+	Unity/Util/Helper:548: in function 'g_logErr'
+	Unity/Util/Debugger:72: in function 'LogError'
+	Unity/Game/Room/Game/GameBaseLogic_he_pai:3871: in function <Unity/Game/Room/Game/GameBaseLogic_he_pai:3869>
+	[C]: in function 'xpcall'
+	Unity/Event/Event:65: in function 'Fire'
+	Unity/Event/Event:150: in function 'FireEvent'
+	Unity/Event/Event:181: in function 'FireNet302Event'
+	Unity/NetWork/NetManager:174: in function <Unity/NetWork/NetManager:138>
+2026-08-29 21:53:14|26/08/29 21:53:14, 移除手牌 位置 , 1, {
+  [1] = 160        =>0xA0,
+}, 
+stack traceback:
+	Unity/Util/Helper:548: in function 'g_logErr'
+	Unity/Util/Debugger:72: in function 'LogError'
+	Unity/Game/Room/Game/GameBaseLogic:1497: in function 'removeHoldValues'
+	Unity/Game/Room/Game/GameBaseLogic_he_pai:3893: in function <Unity/Game/Room/Game/GameBaseLogic_he_pai:3869>
+	[C]: in function 'xpcall'
+	Unity/Event/Event:65: in function 'Fire'
+	Unity/Event/Event:150: in function 'FireEvent'
+	Unity/Event/Event:181: in function 'FireNet302Event'
+	Unity/NetWork/NetManager:174: in function <Unity/NetWork/NetManager:138>
+2026-08-29 21:53:14|26/08/29 21:53:14, 合牌|牌区|手牌|下家|移除|10->9|背牌:10->9|调用:GameBaseLogic:1516:removeHoldValues, 
+stack traceback:
+	Unity/Util/Helper:548: in function 'g_logErr'
+	Unity/Util/Debugger:72: in function 'LogError'
+	Unity/Game/Room/Poker/PokerDataMgr_he_pai:194: in function 'logZoneChange'
+	Unity/Game/Room/Poker/PokerDataMgr_he_pai:247: in function 'removeHoldValues'
+	Unity/Game/Room/Game/GameBaseLogic:1516: in function 'removeHoldValues'
+	Unity/Game/Room/Game/GameBaseLogic_he_pai:3893: in function <Unity/Game/Room/Game/GameBaseLogic_he_pai:3869>
+	[C]: in function 'xpcall'
+	Unity/Event/Event:65: in function 'Fire'
+	Unity/Event/Event:150: in function 'FireEvent'
+	Unity/Event/Event:181: in function 'FireNet302Event'
+	Unity/NetWork/NetManager:174: in function <Unity/NetWork/NetManager:138>
+2026-08-29 21:53:16|21:53:16.49-246: 302 onNetMessage    11022
+2026-08-29 21:53:16|26/08/29 21:53:16, 如意牌机制|服务器日志|11022|玩家选择效果操作|下行| {
+  seatID= 3        =>0x03,
+  effectInfo= table: 0x7638727f3590    {
+      [1] = "hepai.RuYiEffectInfo",
+      [2] = "
+还有谁！9可随机选择1-3名玩家，互相明牌，结算翻倍 ",
+    },
+}, 
+stack traceback:
+	Unity/Util/Helper:548: in function 'g_logErr'
+	Unity/Util/Debugger:72: in function 'LogError'
+	Unity/Game/Room/Game/GameBaseLogic_he_pai:4034: in function <Unity/Game/Room/Game/GameBaseLogic_he_pai:4032>
+	[C]: in function 'xpcall'
+	Unity/Event/Event:65: in function 'Fire'
+	Unity/Event/Event:150: in function 'FireEvent'
+	Unity/Event/Event:181: in function 'FireNet302Event'
+	Unity/NetWork/NetManager:174: in function <Unity/NetWork/NetManager:138>
+2026-08-29 21:53:16|21:53:16.51-246: 302 onNetMessage    11029
+2026-08-29 21:53:16|26/08/29 21:53:16, 如意牌机制|服务器日志|11029|玩家已选如意效果| {
+  seatID= 3        =>0x03,
+  hasEffectInfo= table: 0x7637154814d0    {
+      [1] = table: 0x763715481470        {
+          [1] = "hepai.RuYiEffectInfo",
+          [2] = "		换手气3将任意张数手牌与牌库中的牌等量交换 ",
+        },
+      [2] = table: 0x763715481568        {
+          [1] = "hepai.RuYiEffectInfo",
+          [2] = "	高上限个人封顶倍数上限*2 ",
+        },
+      [3] = table: 0x7637154815c8        {
+          [1] = "hepai.RuYiEffectInfo",
+          [2] = "
+还有谁！9可随机选择1-3名玩家，互相明牌，结算翻倍 ",
+        },
+    },
+}, 
+stack traceback:
+	Unity/Util/Helper:548: in function 'g_logErr'
+	Unity/Util/Debugger:72: in function 'LogError'
+	Unity/Game/Room/Game/GameBaseLogic_he_pai:3901: in function <Unity/Game/Room/Game/GameBaseLogic_he_pai:3899>
+	[C]: in function 'xpcall'
+	Unity/Event/Event:65: in function 'Fire'
+	Unity/Event/Event:150: in function 'FireEvent'
+	Unity/Event/Event:181: in function 'FireNet302Event'
+	Unity/NetWork/NetManager:174: in function <Unity/NetWork/NetManager:138>
+2026-08-29 21:53:17|21:53:17.47-306: 302 onNetMessage    11032
+2026-08-29 21:53:17|26/08/29 21:53:17, 合牌|牌区|手牌|下家|设置|9->9|增:[♦Q,♦5,♣Q,♠Q,♥J,♣J,♦10,♠J,♣K]|减:背牌x9|新:[♣K,♠Q,♣Q,♦Q,♠J,♥J,♣J,♦10,♦5]|调用:GameBaseLogic_he_pai:553:updateHoldPoker, 
+stack traceback:
+	Unity/Util/Helper:548: in function 'g_logErr'
+	Unity/Util/Debugger:72: in function 'LogError'
+	Unity/Game/Room/Poker/PokerDataMgr_he_pai:209: in function 'logZoneChange'
+	Unity/Game/Room/Poker/PokerDataMgr_he_pai:221: in function 'setHoldValues'
+	Unity/Game/Room/Game/GameBaseLogic_he_pai:553: in function 'updateHoldPoker'
+	Unity/Game/Room/Game/GameBaseLogic_he_pai:4013: in function <Unity/Game/Room/Game/GameBaseLogic_he_pai:3970>
+	[C]: in function 'xpcall'
+	Unity/Event/Event:65: in function 'Fire'
+	Unity/Event/Event:150: in function 'FireEvent'
+	Unity/Event/Event:181: in function 'FireNet302Event'
+	Unity/NetWork/NetManager:174: in function <Unity/NetWork/NetManager:138>
+2026-08-29 21:53:17|21:53:17.56-306: 302 onNetMessage    11011
+2026-08-29 21:53:17|21:53:17.58-306: 302 onNetMessage    11020

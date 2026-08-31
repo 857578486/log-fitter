@@ -1,0 +1,50 @@
+Initialize engine version: 2021.3.33f1 (ee5a2b1e1d46)
+GfxDevice: creating device client; threaded=1
+[2026-08-31 18:00:01.120] [INFO] [Boot] Game starting, env=dev
+[2026-08-31 18:00:01.340] [DEBUG] [Config] loaded 128 tables
+Hello from GameStart
+UnityEngine.Debug:Log(Object)
+
+(Filename: Assets/Scripts/GameStart.cs Line: 24)
+
+[2026-08-31 18:00:02.018] [INFO] [Network] Connecting to 10.0.0.8:9000
+[2026-08-31 18:00:02.441] [INFO] [Network] Connected, session=a81c2f
+Missing sprite: icon_gold
+UnityEngine.Debug:LogWarning(Object)
+
+(Filename: Assets/Scripts/UI/BagView.cs Line: 88)
+
+[2026-08-31 18:00:03.102] [WARN] [UI] Reward panel opened before data ready
+[2026-08-31 18:00:03.560] [INFO] [Battle] Enter room 1024
+08-31 18:00:04.012  2144  2168 I Unity   : [Audio] BGM fade in: battle_01
+08-31 18:00:04.220  2144  2168 D Unity   : [Audio] voice bank warmup ok
+[2026-08-31 18:00:05.003] [INFO] [Battle] Player HP=1200 MP=80
+Skill id invalid: 9999
+UnityEngine.Debug:LogError(Object)
+
+(Filename: Assets/Scripts/Battle/SkillCaster.cs Line: 156)
+
+NullReferenceException: Object reference not set to an instance of an object
+GameManager.Update () (at Assets/Scripts/GameManager.cs:45)
+BattleContext.Tick () (at Assets/Scripts/Battle/BattleContext.cs:210)
+UnityEngine.Debug:LogException(Exception)
+
+(Filename: Assets/Scripts/GameManager.cs Line: 45)
+
+[2026-08-31 18:00:06.448] [ERROR] [Battle] Tick failed, frame=318
+[2026-08-31 18:00:06.449] [ERROR] [Battle] Tick failed, frame=318
+[2026-08-31 18:00:06.450] [ERROR] [Battle] Tick failed, frame=318
+[2026-08-31 18:00:07.100] [INFO] [Network] heartbeat rtt=42ms
+[2026-08-31 18:00:08.330] [VERBOSE] [Profiler] gc alloc 1.2MB
+08-31 18:00:09.010  2144  2168 W Unity   : [Resource] atlas not found: ui_common
+[2026-08-31 18:00:10.200] [INFO] [UI] Open panel Shop
+[2026-08-31 18:00:11.540] [WARN] [IAP] receipt validate timeout, retry=1
+[2026-08-31 18:00:12.880] [INFO] [IAP] receipt validate ok
+ArgumentException: skill config missing, id=42
+  at Config.SkillTable.Get (System.Int32 id) [0x00012] in Assets/Scripts/Config/SkillTable.cs:33
+  at SkillCaster.Cast (System.Int32 id) [0x0001b] in Assets/Scripts/Battle/SkillCaster.cs:67
+
+(Filename: Assets/Scripts/Config/SkillTable.cs Line: 33)
+
+[2026-08-31 18:00:14.002] [INFO] [Battle] Leave room 1024
+[2026-08-31 18:00:14.880] [INFO] [Boot] return lobby
