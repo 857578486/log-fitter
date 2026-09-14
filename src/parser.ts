@@ -258,6 +258,15 @@ function matchStrongStart(line: string): StrongStart | null {
   }
 
   if (EXCEPTION_RE.test(line)) {
+    // 进程退出时的 ThreadAbortException 不是业务错误
+    if (/^ThreadAbortException\b/i.test(line.trim())) {
+      return {
+        level: 'info',
+        tag: 'Runtime',
+        message: line.trim(),
+        keepOpen: true,
+      }
+    }
     const time = line.match(TIME_PREFIX_RE)
     return {
       timestamp: time?.[1] ?? '',

@@ -23,5 +23,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "exclude": ["src/parser.verify.ts", "src/sample.verify.ts", "src/game.verify.ts"]
+  "exclude": ["src/parser.verify.ts", "src/sample.verify.ts", "src/game.verify.ts", "src/zip.repro.ts"]
 }

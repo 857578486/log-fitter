@@ -53,6 +53,7 @@ export function LogList({
                 aria-selected={selected}
                 className={`log-row level-${entry.level}${selected ? ' selected' : ''}${item.index % 2 ? ' alt' : ''}`}
                 style={{
+                  top: 0,
                   transform: `translateY(${item.start}px)`,
                 }}
                 onClick={() => onSelect(entry.id)}

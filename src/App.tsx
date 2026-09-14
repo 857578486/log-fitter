@@ -7,7 +7,7 @@ import { applyFilter, countByLevel, uniqueFiles, uniqueTags } from './filter'
 import { detectFormat, parseLogText } from './parser'
 import type { LogEntry, LogLevel } from './types'
 import { LEVELS, LEVEL_LABEL } from './types'
-import { loadLogChunks } from './zipLoader'
+import { loadLogChunks, filesFromDataTransfer, type LoadProgress } from './zipLoader'
 
 const ALL_ON: Record<LogLevel, boolean> = {
   verbose: true,
@@ -36,6 +36,7 @@ export default function App() {
   const [pasteText, setPasteText] = useState('')
   const [detailH, setDetailH] = useState(220)
   const [busy, setBusy] = useState(false)
+  const [progress, setProgress] = useState<LoadProgress | null>(null)
 
   const counts = useMemo(() => countByLevel(entries), [entries])
   const tags = useMemo(() => uniqueTags(entries), [entries])
@@ -61,22 +62,40 @@ export default function App() {
     [entries, selectedId],
   )
 
-  const ingest = useCallback((chunks: { name: string; text: string }[]) => {
+  const ingest = useCallback(async (chunks: { name: string; text: string }[]) => {
     const next: LogEntry[] = []
     let idBase = 0
     const labels: string[] = []
-    for (const chunk of chunks) {
+
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      setProgress({
+        phase: 'file',
+        current: i + 1,
+        total: chunks.length,
+        label: `解析 ${chunk.name}`,
+      })
       const parsed = parseLogText(chunk.text, chunk.name)
       for (const item of parsed) {
         next.push({ ...item, id: idBase++ })
       }
       labels.push(detectFormat(chunk.text))
+      // 每解析完一个文件就让出主线程，避免大包卡住页面
+      await new Promise((r) => setTimeout(r, 0))
     }
+
     setEntries(next)
-    setFormat([...new Set(labels)].join(' · '))
+    setFormat(
+      `${chunks.length} 个文件 · ${next.length} 条` +
+        (labels.length ? ` · ${[...new Set(labels)].join(' / ')}` : ''),
+    )
     setSelectedId(next[0]?.id ?? null)
+    setQuery('')
     setTag('all')
     setFileName('all')
+    setLevels(ALL_ON)
+    setInvert(false)
+    setCollapse(false)
   }, [])
 
   const readFiles = useCallback(
@@ -84,22 +103,27 @@ export default function App() {
       const list = [...fileList]
       if (!list.length) return
       setBusy(true)
+      setProgress({ phase: 'reading', current: 0, total: list.length, label: '准备读取…' })
       try {
-        const chunks = await loadLogChunks(list)
-        if (!chunks.length) return
-        ingest(chunks)
+        const chunks = await loadLogChunks(list, setProgress)
+        if (!chunks.length) {
+          window.alert('没有找到可解析的 .log / .txt / .zip')
+          return
+        }
+        await ingest(chunks)
       } catch (err) {
         const message = err instanceof Error ? err.message : '读取文件失败'
         window.alert(message)
       } finally {
         setBusy(false)
+        setProgress(null)
       }
     },
     [ingest],
   )
 
   const loadSample = useCallback(() => {
-    ingest([{ name: 'sample-unity.log', text: sampleUnityLog }])
+    void ingest([{ name: 'sample-unity.log', text: sampleUnityLog }])
   }, [ingest])
 
   const filteredEntries = useMemo(() => {
@@ -176,7 +200,20 @@ export default function App() {
     const onDrop = (e: DragEvent) => {
       e.preventDefault()
       setDragging(false)
-      if (e.dataTransfer?.files?.length) void readFiles(e.dataTransfer.files)
+      if (!e.dataTransfer) return
+      // 必须在同步阶段处理 DataTransfer，再异步解析
+      void (async () => {
+        try {
+          const files = await filesFromDataTransfer(e.dataTransfer!)
+          if (!files.length) {
+            window.alert('没有识别到可导入的 zip / 日志文件')
+            return
+          }
+          await readFiles(files)
+        } catch (err) {
+          window.alert(err instanceof Error ? err.message : '导入失败')
+        }
+      })()
     }
     window.addEventListener('dragover', onDragOver)
     window.addEventListener('dragleave', onDragLeave)
@@ -375,7 +412,13 @@ export default function App() {
       </main>
 
       <footer className="status">
-        <span>{busy ? '正在解析…' : format || '未导入日志'}</span>
+        <span>
+          {busy
+            ? progress
+              ? `${progress.phase === 'unzip' ? '解压' : progress.phase === 'reading' ? '读取' : '处理'} ${progress.current}/${progress.total} · ${progress.label}`
+              : '正在解析…'
+            : format || '未导入日志'}
+        </span>
         <span>
           显示 {filtered.matchedCount} / {entries.length} 条
           {collapse && filtered.rows.length !== filtered.matchedCount
@@ -385,7 +428,18 @@ export default function App() {
         <span>↑↓ 选择 · Ctrl+F 搜索 · Ctrl+O 导入</span>
       </footer>
 
-      {dragging && (
+      {busy && (
+        <div className="drop-mask">
+          <div>
+            {progress
+              ? `${progress.phase === 'unzip' ? '解压中' : progress.phase === 'reading' ? '读取中' : '解析中'} ${progress.current}/${progress.total}`
+              : '处理中…'}
+            <div style={{ marginTop: 8, fontSize: 13, opacity: 0.75 }}>{progress?.label}</div>
+          </div>
+        </div>
+      )}
+
+      {dragging && !busy && (
         <div className="drop-mask">
           <div>松开鼠标导入 zip / 日志文件</div>
         </div>
