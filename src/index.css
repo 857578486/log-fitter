@@ -210,6 +210,54 @@ textarea {
   padding: 0 8px;
 }
 
+.time-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted);
+  background: #17191d;
+}
+
+.time-range.on {
+  color: var(--text);
+  border-color: #4c8dff88;
+  background: #243456;
+}
+
+.time-range input[type='datetime-local'] {
+  height: 24px;
+  border: 0;
+  border-radius: 4px;
+  background: #12141a;
+  color: var(--text);
+  padding: 0 4px;
+  outline: none;
+  min-width: 168px;
+}
+
+.time-range input[type='datetime-local']:disabled {
+  opacity: 0.45;
+}
+
+.time-range input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+
+.time-sep {
+  color: var(--muted);
+}
+
+.time-btn {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
 .level-toggles {
   display: flex;
   gap: 6px;

@@ -1,4 +1,5 @@
 import type { LogEntry, LogLevel } from './types'
+import { parseLogTimeMs } from './time'
 
 const DEBUG_LOG_RE =
   /UnityEngine\.(?:Debug|Logger):Log(Warning|Error|Exception|Assertion)?\b/
@@ -167,12 +168,17 @@ export function parseLogText(text: string, fileName = 'log.txt'): LogEntry[] {
       const refined = inferLevel(draft.message)
       if (refined !== 'info') draft.level = refined
     }
+    const timeMs =
+      parseLogTimeMs(draft.timestamp) ??
+      parseLogTimeMs(draft.message) ??
+      parseLogTimeMs(raw.split('\n')[0] ?? '')
     return {
       id: nextId++,
       fileName: draft.fileName,
       lineStart: draft.lineStart,
       lineEnd: draft.lineEnd,
       timestamp: draft.timestamp,
+      timeMs,
       level: draft.level,
       tag: draft.tag,
       message: draft.message,

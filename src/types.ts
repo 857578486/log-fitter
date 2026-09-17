@@ -6,6 +6,8 @@ export interface LogEntry {
   lineStart: number
   lineEnd: number
   timestamp: string
+  /** 解析后的本地毫秒时间；无法解析则为 null */
+  timeMs: number | null
   level: LogLevel
   tag: string
   message: string

@@ -9,6 +9,9 @@ export interface FilterOptions {
   tag: string
   fileName: string
   collapse: boolean
+  /** 含边界；null 表示不限制 */
+  timeFromMs: number | null
+  timeToMs: number | null
 }
 
 export interface FilterResult {
@@ -63,11 +66,19 @@ export function applyFilter(entries: LogEntry[], options: FilterOptions): Filter
     }
   }
 
+  const hasTimeRange = options.timeFromMs != null || options.timeToMs != null
+
   const filtered: LogEntry[] = []
   for (const entry of entries) {
     if (!options.levels[entry.level]) continue
     if (options.tag !== 'all' && entry.tag !== options.tag) continue
     if (options.fileName !== 'all' && entry.fileName !== options.fileName) continue
+
+    if (hasTimeRange) {
+      if (entry.timeMs == null) continue
+      if (options.timeFromMs != null && entry.timeMs < options.timeFromMs) continue
+      if (options.timeToMs != null && entry.timeMs > options.timeToMs) continue
+    }
 
     if (matcher) {
       const haystack = `${entry.timestamp} ${entry.tag} ${entry.message} ${entry.raw}`

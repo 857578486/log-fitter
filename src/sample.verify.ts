@@ -45,6 +45,8 @@ const collapsed = applyFilter(entries, {
   tag: 'all',
   fileName: 'all',
   collapse: true,
+  timeFromMs: null,
+  timeToMs: null,
 })
 expect(collapsed.matchedCount === 3, `filter count ${collapsed.matchedCount}`)
 expect(collapsed.rows.length === 1 && collapsed.rows[0].count === 3, 'collapse failed')
@@ -58,6 +60,8 @@ const onlyErrors = applyFilter(entries, {
   tag: 'all',
   fileName: 'all',
   collapse: false,
+  timeFromMs: null,
+  timeToMs: null,
 })
 expect(onlyErrors.rows.every((r) => r.entry.level === 'error'), 'level filter leaked')
 expect(onlyErrors.rows.length > 0, 'no errors found')

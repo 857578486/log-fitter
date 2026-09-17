@@ -8,6 +8,7 @@ import { detectFormat, parseLogText } from './parser'
 import type { LogEntry, LogLevel } from './types'
 import { LEVELS, LEVEL_LABEL } from './types'
 import { loadLogChunks, filesFromDataTransfer, type LoadProgress } from './zipLoader'
+import { dateTimeLocalToMs, entryTimeRange, msToDateTimeLocal } from './time'
 
 const ALL_ON: Record<LogLevel, boolean> = {
   verbose: true,
@@ -31,6 +32,8 @@ export default function App() {
   const [tag, setTag] = useState('all')
   const [fileName, setFileName] = useState('all')
   const [levels, setLevels] = useState(ALL_ON)
+  const [timeFrom, setTimeFrom] = useState('')
+  const [timeTo, setTimeTo] = useState('')
   const [dragging, setDragging] = useState(false)
   const [pasteOpen, setPasteOpen] = useState(false)
   const [pasteText, setPasteText] = useState('')
@@ -41,6 +44,10 @@ export default function App() {
   const counts = useMemo(() => countByLevel(entries), [entries])
   const tags = useMemo(() => uniqueTags(entries), [entries])
   const files = useMemo(() => uniqueFiles(entries), [entries])
+  const timeBounds = useMemo(() => entryTimeRange(entries), [entries])
+  const timeFromMs = useMemo(() => dateTimeLocalToMs(timeFrom), [timeFrom])
+  const timeToMs = useMemo(() => dateTimeLocalToMs(timeTo), [timeTo])
+  const timeFilterOn = Boolean(timeFrom || timeTo)
 
   const filtered = useMemo(
     () =>
@@ -53,8 +60,22 @@ export default function App() {
         tag,
         fileName,
         collapse,
+        timeFromMs,
+        timeToMs,
       }),
-    [entries, levels, query, regex, caseSensitive, invert, tag, fileName, collapse],
+    [
+      entries,
+      levels,
+      query,
+      regex,
+      caseSensitive,
+      invert,
+      tag,
+      fileName,
+      collapse,
+      timeFromMs,
+      timeToMs,
+    ],
   )
 
   const selected = useMemo(
@@ -96,6 +117,8 @@ export default function App() {
     setLevels(ALL_ON)
     setInvert(false)
     setCollapse(false)
+    setTimeFrom('')
+    setTimeTo('')
   }, [])
 
   const readFiles = useCallback(
@@ -143,7 +166,20 @@ export default function App() {
     setQuery('')
     setTag('all')
     setFileName('all')
+    setTimeFrom('')
+    setTimeTo('')
   }, [])
+
+  const clearTimeRange = useCallback(() => {
+    setTimeFrom('')
+    setTimeTo('')
+  }, [])
+
+  const applyFullTimeRange = useCallback(() => {
+    if (timeBounds.min == null || timeBounds.max == null) return
+    setTimeFrom(msToDateTimeLocal(timeBounds.min))
+    setTimeTo(msToDateTimeLocal(timeBounds.max))
+  }, [timeBounds])
 
   const exportHtml = useCallback(() => {
     downloadStandaloneHtml(filteredEntries, `${exportBaseName}-查看.html`)
@@ -152,6 +188,13 @@ export default function App() {
   const exportTxt = useCallback(() => {
     downloadTextLogs(filteredEntries, `${exportBaseName}-过滤.txt`)
   }, [exportBaseName, filteredEntries])
+
+  useEffect(() => {
+    if (selectedId == null) return
+    if (!filtered.rows.some((r) => r.entry.id === selectedId)) {
+      setSelectedId(filtered.rows[0]?.entry.id ?? null)
+    }
+  }, [filtered.rows, selectedId])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -355,6 +398,44 @@ export default function App() {
           </label>
         )}
 
+        <div className={`time-range${timeFilterOn ? ' on' : ''}`} title="按日志时间筛选">
+          <span>时间</span>
+          <input
+            type="datetime-local"
+            step="1"
+            value={timeFrom}
+            min={timeBounds.min != null ? msToDateTimeLocal(timeBounds.min) : undefined}
+            max={timeBounds.max != null ? msToDateTimeLocal(timeBounds.max) : undefined}
+            onChange={(e) => setTimeFrom(e.target.value)}
+            disabled={!entries.length}
+          />
+          <span className="time-sep">~</span>
+          <input
+            type="datetime-local"
+            step="1"
+            value={timeTo}
+            min={timeBounds.min != null ? msToDateTimeLocal(timeBounds.min) : undefined}
+            max={timeBounds.max != null ? msToDateTimeLocal(timeBounds.max) : undefined}
+            onChange={(e) => setTimeTo(e.target.value)}
+            disabled={!entries.length}
+          />
+          {timeFilterOn ? (
+            <button type="button" className="btn ghost time-btn" onClick={clearTimeRange}>
+              清除
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn ghost time-btn"
+              onClick={applyFullTimeRange}
+              disabled={timeBounds.min == null}
+              title="填入日志最早~最晚时间，再自行收窄"
+            >
+              填入范围
+            </button>
+          )}
+        </div>
+
         <div className="level-toggles">
           {LEVELS.map((level) => (
             <button
@@ -373,6 +454,9 @@ export default function App() {
       </section>
 
       {filtered.error && <div className="banner warn">{filtered.error}</div>}
+      {timeFilterOn && timeFromMs != null && timeToMs != null && timeFromMs > timeToMs && (
+        <div className="banner warn">开始时间晚于结束时间，将不会匹配到日志</div>
+      )}
 
       <main className="workspace">
         {entries.length === 0 ? (
@@ -424,6 +508,7 @@ export default function App() {
           {collapse && filtered.rows.length !== filtered.matchedCount
             ? ` · 折叠为 ${filtered.rows.length} 行`
             : ''}
+          {timeFilterOn ? ' · 已按时段过滤' : ''}
         </span>
         <span>↑↓ 选择 · Ctrl+F 搜索 · Ctrl+O 导入</span>
       </footer>
